@@ -9,7 +9,11 @@ Download links:
 
 ## 1. Set the console keyboard layout
 Use this to check a list of keyboard layouts  
-```ls /usr/share/kbd/keymaps/**/*.map.gz```
+```
+ls /usr/share/kbd/keymaps/**/*.map.gz
+```
 
 To set the keyboard layout, pass a corresponding file name to loadkeys(1), omitting path and file extension. For example, to set a German keyboard layout:  
-```loadkeys de-latin1```
+```
+loadkeys de-latin1
+```
