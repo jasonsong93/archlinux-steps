@@ -93,9 +93,25 @@ Use fdisk or parted/gdisk to modify partition tables. For example:
 ```
 fdisk /dev/the_disk_to_be_partitioned
 ```
+If unsure which one to use, use `gdisk` (explained [here](https://unix.stackexchange.com/questions/104238/fdisk-vs-parted)). I will experiment with this when I have time, but it works fine for now.
 
-If unsure which one to use, use gdisk (explained [here](https://unix.stackexchange.com/questions/104238/fdisk-vs-parted)). I will experiment with this when I have time, but it works well for now.
+### **Create a partition table and partitions**
+To use gdisk, run the program with the name of the block device you want to change/edit. This example uses `/dev/nvme0n1`:
+```
+gdisk /dev/nvme0n1
+``` 
+### **Create new table**
+To create a new GUID Partition Table and clear all current partition data, type `o` at the prompt. Skip this step if the table you require has already been created.
 
-```
-gdisk -l /dev/nvme0n1
-```
+### ***Create partitions***
+Create a new partition with the n command. You must enter the partition number, first sector, last sector and the partition type.
+
+In my example, I'll do the following:
+
+| Mount Point |          Partition          |     Partition Type    | Suggested Size                       |
+| ----------- | --------------------------- | --------------------- | ------------------------------------ |   
+| `/mnt/boot` | `/dev/efi_system_partition` | EFI system partition  | >300MB, or 1GB for multiple kernels  |
+| `[SWAP]`    | `/dev/swap_partition`       | Linux swap            | More than 512 MiB                    |  
+| `/mnt`      | `/dev/root_partition`       | Linux x86-64 root (/) | Remainder of the device              | 
+
+
