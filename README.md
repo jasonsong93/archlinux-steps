@@ -3,8 +3,13 @@ Personal notes on how to actually set this up, following the official ArchWiki.
 This assumes that you have already acquired an ISO installation image which can be found below.
 
 Download links:  
-[Downloads Page](https://archlinux.org/download/)  
-[Australia ISO Download](https://mirror.aarnet.edu.au/pub/archlinux/iso/2023.04.01/)
+[Arch Linux Downloads](https://archlinux.org/download/)  
+[Rufus to burn ISO](https://rufus.ie/en/)
 
 
-`$ gpg --keyserver-options auto-key-retrieve --verify archlinux-version-x86_64.iso.sig`
+## 1. Set the console keyboard layout
+Use this to check a list of keyboard layouts  
+`ls /usr/share/kbd/keymaps/**/*.map.gz`
+
+To set the keyboard layout, pass a corresponding file name to loadkeys(1), omitting path and file extension. For example, to set a German keyboard layout:  
+`loadkeys de-latin1`
