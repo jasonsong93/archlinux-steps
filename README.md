@@ -244,10 +244,16 @@ You can also choose to change the keyboard layout, but I don't modify this since
 
 ### **Network Configuration**
 Create the hostname file `/etc/hostname` and edit it with your new hostname. See [this](https://datatracker.ietf.org/doc/html/rfc1178) link for how to come up with a good hostname.
-
 You can also use the following command:
 ```
 hostnamectl set-hostname myhostname
+```
+
+We then need to configure the hosts. Edit the `/etc/hosts` file. It should look something like 12:22 of [this](https://youtu.be/FFXRFTrZ2Lk?t=742) video.
+
+I need to double check the following packages, but install these (according to that video) for networking:
+```
+pacman -S efibootmgr networkmanager network-manager-applet wireless_tools wpa_supplicant dialog os-prober mtools dosfstools linux-headers
 ```
 
 ### **Initramfs**
@@ -262,20 +268,37 @@ Set the root password with the `passwd` command
 ### **Install Bootloader**
 I will install [systemd](https://wiki.archlinux.org/title/systemd-boot) - feel free to use GRUB if that's your preferred option. 
 ```
-bootctl install
+bootctl --path=/boot install
 ```
+We need to modify 2 files here. One is `loader.conf` located under `/boot/loader/`. It should look like this:
+>timeout 3
+>
+> #console-mode keep
+>
+>default arch-*
+
+We also need to create `/boot/loader/entries/arch.conf`.
+
 If you have an Intel or AMD CPU, enable microcode updates in addition. Since I have an AMD CPU, I did the following:
 ```
-nvim /boot/loader/entries/entry.conf
+nvim /boot/loader/entries/arch.conf
 ```
 and added the following block to the file:
 >title   Arch Linux
 >
 >linux   /vmlinuz-linux
 >
->initrd  /cpu_manufacturer-ucode.img
->
 >initrd  /initramfs-linux.img
+>
+>options root=/dev/`root-partition` rw
+
+We also need to allow network manager to start on boot.
+```
+systemctl enable NetworkManager
+```
+
+Let's create a user while we are here.
+
 
 
 ## 11. Reboot
@@ -288,4 +311,42 @@ Finally, restart the machine by typing reboot: any partitions still mounted will
 But wait ... there's more.
 
 ## 12. System Administration
+Once you reboot, log in as the `root` user.
+It's not recommended to use the root user, so let's create another user with elevated privileges.
 
+Use the following command to create a user with a group, replacing `username` with whatever you prefer:
+```
+useradd -mG wheel username
+```
+Give your user a password
+```
+passwd
+```
+Now we need to ensure that group is a super user. Type the following command (feel free to replace nvim with nano or any other editor of your choice).
+```
+EDITOR=nvim visudo
+```
+Find the comment that says 
+> \##Uncomment to allow members of group wheel to execute any command 
+>
+> \# %wheel ALL=(ALL) ALL
+
+Reboot the machine, and log back in.
+
+## 13. Install Graphics Drivers
+The commands will differ depending on what card you have.
+
+>Intel:
+```
+sudo pacman -S xf86-video-intel
+```
+
+>AMD:
+```
+sudo pacman -S xf86-video-amdgpu
+```
+
+>Nvidia:
+```
+sudo pacman -S nvidia nvidia-utils
+```
