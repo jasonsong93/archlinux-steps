@@ -242,3 +242,49 @@ You can also choose to change the keyboard layout, but I don't modify this since
 
 
 ### **Network Configuration**
+Create the hostname file `/etc/hostname` and edit it with your new hostname. See [this](https://datatracker.ietf.org/doc/html/rfc1178) link for how to come up with a good hostname.
+
+You can also use the following command:
+```
+hostnamectl set-hostname myhostname
+```
+
+### **Initramfs**
+Not sure if this is 100% required, follow up. Creating a new initramfs is usually not required, because mkinitcpio was run on installation of the kernel package with pacstrap.
+```
+mkinitcpio -P
+```
+
+### **Root Password**
+Set the root password with the `passwd` command
+
+### **Install Bootloader**
+I will install [systemd](https://wiki.archlinux.org/title/systemd-boot) - feel free to use GRUB if that's your preferred option. 
+```
+bootctl install
+```
+If you have an Intel or AMD CPU, enable microcode updates in addition. Since I have an AMD CPU, I did the following:
+```
+nvim /boot/loader/entries/entry.conf
+```
+and added the following block to the file:
+>title   Arch Linux
+>
+>linux   /vmlinuz-linux
+>
+>initrd  /cpu_manufacturer-ucode.img
+>
+>initrd  /initramfs-linux.img
+
+
+## 11. Reboot
+Congratulations! You've made it to the end of the install.
+Exit the chroot environment by typing exit or pressing Ctrl+d.
+Optionally manually unmount all the partitions with umount -R /mnt.
+
+Finally, restart the machine by typing reboot: any partitions still mounted will be automatically unmounted by systemd. Remember to remove the installation medium and then login into the new system with the root account.
+
+But wait ... there's more.
+
+## 12. System Administration
+
