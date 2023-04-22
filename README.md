@@ -16,7 +16,7 @@ To set the keyboard layout, pass a corresponding file name to loadkeys, omitting
 ```
 loadkeys de-latin1
 ```
-I left this as default.
+I leave this as default and don't change anything (US).
 
 ## 2. Verify the boot mode
 To verify the boot mode, list the efivars directory:  
@@ -167,10 +167,7 @@ reflector --country France,Germany --age 24 --protocol https --sort rate --save 
 ## 9. Install Essential Packages
 *Note: No software or configuration (except for /etc/pacman.d/mirrorlist) get carried over from the live environment to the installed system.*
 
-Use the `pacstrap` script to install the `base` package, Linux `kernel` and firmware for common hardware:
-```
-pacstrap -K /mnt base linux linux-firmware
-```
+Use the `pacstrap` script to install the `base` package, Linux `kernel` and firmware for common hardware.
 
 The Arch Linux page recommends the following:
 > The base package does not include all tools from the live installation, so installing more packages may be necessary for a fully functional base system. To install other packages or package groups, append the names to the pacstrap command above (space separated) or use pacman to install them while chrooted into the new system. In particular, consider installing:
@@ -180,3 +177,68 @@ The Arch Linux page recommends the following:
 >- software necessary for networking (e.g. a network manager or a standalone DHCP client, authentication software for Wi-Fi, ModemManager for mobile broadband connections),
 >- a text editor,
 >- packages for accessing documentation in man and info pages: man-db, man-pages and texinfo.
+
+There's a LOT of information on the internet for what to install.
+I'd rather not be prescriptive, so here's what I think are essential (and reasons):
+- `base-devel`: it has a lot of tools, which would get installed randomly by other packages you might want
+- `neofetch`: show off that "I use Arch btw"
+- `neovim`: I use this as my primary editor, feel free to use whatever you would like
+- `openssh`: In case you need to perform remote work 
+- `man-db, man-pages` and `texinfo`: Specified above by Arch (documentation and man pages)
+
+```
+pacstrap -K /mnt base linux linux-firmware neovim base-devel neofetch openssh man-db man-pages texinfo
+```
+
+I will add more to this list over time for things I find essential. Note that later on in installation, we will have more chances to configure packages.
+
+## 10. Configure the System
+### **Generate an FStab file**
+Generate an fstab file (use -U or -L to define by UUID or labels, respectively):
+```
+genfstab -U /mnt >> /mnt/etc/fstab
+```
+
+### **Chroot**
+Change root into the new system:
+```
+arch-chroot /mnt
+```
+
+### **Time zone**
+Set the time zone:
+```
+ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+```
+In my case,
+```
+ln -sf /usr/share/zoneinfo/Australia/Melbourne /etc/localtime
+```
+
+Run hwclock(8) to generate `/etc/adjtime`:
+```
+hwclock --systohc
+```
+
+### **Localization**
+Edit `/etc/locale.gen` and uncomment `en_US.UTF-8 UTF-8` and other needed locales.  
+In my case, I uncommented `en_AU.UTF-8 UTF-8`
+
+Then generate the locales by running:
+```
+locale-gen
+```
+
+Create the `locale.conf` file in `/etc/locale.conf` and update with:
+```
+LANG=en_US.UTF-8
+```
+You could also run the following, but I usually just manually create it in the previous steps:
+```
+localectl set-locale LANG=en_US.UTF-8
+```
+
+You can also choose to change the keyboard layout, but I don't modify this since I leave it as default (refer to [step 1](#1-set-the-console-keyboard-layout)). If you set the console keyboard layout, make the changes persistent in [`vconsole.conf`](https://man.archlinux.org/man/vconsole.conf.5). 
+
+
+### **Network Configuration**
