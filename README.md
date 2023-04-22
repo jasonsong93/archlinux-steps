@@ -116,7 +116,7 @@ In my example, I'll do the following:
 
 [Do I need swap?](https://chrisdown.name/2018/01/02/in-defence-of-swap.html)
 
-Follow the prompts to create the various partitions. Follow [this](https://wiki.archlinux.org/title/GPT_fdisk#gdisk_EFI_application) link if you get stuck.
+Follow the prompts to create the various partitions. Follow [this](https://wiki.archlinux.org/title/GPT_fdisk#gdisk_EFI_application) link for the Hex code/GUID as well as further information.
 
 
 ## 6. Format the Partitions
@@ -159,9 +159,9 @@ Edit the mirrorlist by using:
 vim /etc/pacman.d/mirrorlist
 ```
 
-During installation, I prefer to use this command. It selects the HTTPS mirrors synchronized within the last 24 hours and located in either France or Germany, sort them by download speed, and overwrite the file /etc/pacman.d/mirrorlist with the results:
+During installation, I prefer to use this command. It selects the HTTPS mirrors synchronized within the last 24 hours and located in either Australia (you can select multiple countries with a comma such as Australia,France), sort them by download speed, and overwrite the file /etc/pacman.d/mirrorlist with the results:
 ```
-reflector --country France,Germany --age 24 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+reflector --country Australia --age 24 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 ```
 
 ## 9. Install Essential Packages
