@@ -180,6 +180,7 @@ The Arch Linux page recommends the following:
 
 There's a LOT of information on the internet for what to install.
 I'd rather not be prescriptive, so here's what I think are essential (and reasons):
+- `git`: Version control system
 - `base-devel`: it has a lot of tools, which would get installed randomly by other packages you might want
 - `neofetch`: show off that "I use Arch btw"
 - `neovim`: I use this as my primary editor, feel free to use whatever you would like
