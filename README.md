@@ -108,10 +108,75 @@ Create a new partition with the n command. You must enter the partition number, 
 
 In my example, I'll do the following:
 
-| Mount Point |          Partition          |     Partition Type    | Suggested Size                       |
-| ----------- | --------------------------- | --------------------- | ------------------------------------ |   
-| `/mnt/boot` | `/dev/efi_system_partition` | EFI system partition  | >300MB, or 1GB for multiple kernels  |
-| `[SWAP]`    | `/dev/swap_partition`       | Linux swap            | More than 512 MiB                    |  
-| `/mnt`      | `/dev/root_partition`       | Linux x86-64 root (/) | Remainder of the device              | 
+| Mount Point |          Partition          |     Partition Type    |                Suggested Size                 |
+| ----------- | --------------------------- | --------------------- | --------------------------------------------- |   
+| `/mnt/boot` | `/dev/efi_system_partition` | EFI system partition  | 1GB since I might use Windows (~300MB if not) |
+| `[SWAP]`    | `/dev/swap_partition`       | Linux swap            | More than 512 MiB                             |  
+| `/mnt`      | `/dev/root_partition`       | Linux x86-64 root (/) | Remainder of the device                       | 
+
+[Do I need swap?](https://chrisdown.name/2018/01/02/in-defence-of-swap.html)
+
+Follow the prompts to create the various partitions. Follow [this](https://wiki.archlinux.org/title/GPT_fdisk#gdisk_EFI_application) link if you get stuck.
 
 
+## 6. Format the Partitions
+For example, to create an Ext4 file system on /dev/root_partition, run:
+```
+mkfs.ext4 /dev/root_partition
+```
+If you created a partition for swap, initialize it with mkswap:
+```
+mkswap /dev/swap_partition
+```
+
+If you created an EFI system partition, format it to FAT32 using mkfs.fat:
+```
+mkfs.fat -F 32 /dev/efi_system_partition
+```
+
+## 7. Mount the File Systems 
+Mount the root volume to /mnt. For example, if the root volume is /dev/root_partition:
+```
+mount /dev/root_partition /mnt
+```
+For UEFI systems, mount the EFI system partition:
+```
+mount --mkdir /dev/efi_system_partition /mnt/boot
+```
+If you created a swap volume, enable it with `swapon`:
+```
+swapon /dev/swap_partition
+```
+
+If you run `lsblk`, you should see all the partitions and their corresponding mountpoints.
+
+## 8. Update mirrors for Installation and Downloads
+To enable mirrors, edit /etc/pacman.d/mirrorlist and locate your geographic region. Uncomment mirrors you would like to use.
+[This](https://archlinux.org/mirrorlist/) link auto-generates an mirrorlist file for you based on the country you choose.
+
+Edit the mirrorlist by using:
+```
+vim /etc/pacman.d/mirrorlist
+```
+
+During installation, I prefer to use this command. It selects the HTTPS mirrors synchronized within the last 24 hours and located in either France or Germany, sort them by download speed, and overwrite the file /etc/pacman.d/mirrorlist with the results:
+```
+reflector --country France,Germany --age 24 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+```
+
+## 9. Install Essential Packages
+*Note: No software or configuration (except for /etc/pacman.d/mirrorlist) get carried over from the live environment to the installed system.*
+
+Use the `pacstrap` script to install the `base` package, Linux `kernel` and firmware for common hardware:
+```
+pacstrap -K /mnt base linux linux-firmware
+```
+
+The Arch Linux page recommends the following:
+> The base package does not include all tools from the live installation, so installing more packages may be necessary for a fully functional base system. To install other packages or package groups, append the names to the pacstrap command above (space separated) or use pacman to install them while chrooted into the new system. In particular, consider installing:
+>- userspace utilities for the management of file systems that will be used on the system,
+>- utilities for accessing RAID or LVM partitions,
+>- specific firmware for other devices not included in linux-firmware (e.g. sof-firmware for sound cards),
+>- software necessary for networking (e.g. a network manager or a standalone DHCP client, authentication software for Wi-Fi, ModemManager for mobile broadband connections),
+>- a text editor,
+>- packages for accessing documentation in man and info pages: man-db, man-pages and texinfo.
