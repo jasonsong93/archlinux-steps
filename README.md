@@ -17,3 +17,38 @@ To set the keyboard layout, pass a corresponding file name to loadkeys(1), omitt
 ```
 loadkeys de-latin1
 ```
+
+## 2. Verify the boot mode
+To verify the boot mode, list the efivars directory:  
+```
+ls /sys/firmware/efi/efivars
+```
+If the command shows the directory without error, then the system is booted in UEFI mode.
+
+## 3. Connect to the internet
+Ensure your network interface is listed and enabled:
+```
+ip link
+```
+We can configure DHCP (provided by systemd-networkd and systemd-resolved for Ethernet) or a Static IP address.  
+For more information regarding Static IP addresses, click [here](https://wiki.archlinux.org/title/Network_configuration#Static_IP_address)  
+
+If using Wi-Fi, follow [**iwctl**](https://wiki.archlinux.org/title/Iwd#iwctl).
+
+Otherwise, to test if the connection is successful, run 
+```
+ping archlinux.org
+```
+
+> **_Note_**: In the installation image, systemd-networkd, systemd-resolved, iwd and ModemManager are preconfigured and enabled by default. That will **not** be the case for the installed system.
+
+## 4. Update the System Clock
+Use timedatectl to ensure the system clock is accurate:
+```
+timedatectl
+```
+Use this to list all the timezones, and then set your corresponding timezeone. For example, mine will be Australia/Melbourne.
+```
+timedatectl list-timezones
+timedatectl set-timezone Australia/Melbourne
+```
