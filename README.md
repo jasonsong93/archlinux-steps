@@ -6,6 +6,7 @@ Download links:
 [Arch Linux Downloads](https://archlinux.org/download/)  
 [Rufus to burn ISO](https://rufus.ie/en/)
 
+</br>
 
 ## 1. Set the console keyboard layout
 Use this to check a list of keyboard layouts  
@@ -18,12 +19,16 @@ To set the keyboard layout, pass a corresponding file name to loadkeys(1), omitt
 loadkeys de-latin1
 ```
 
+</br>
+
 ## 2. Verify the boot mode
 To verify the boot mode, list the efivars directory:  
 ```
 ls /sys/firmware/efi/efivars
 ```
 If the command shows the directory without error, then the system is booted in UEFI mode.
+
+</br>
 
 ## 3. Connect to the internet
 Ensure your network interface is listed and enabled:
@@ -40,7 +45,9 @@ Otherwise, to test if the connection is successful, run
 ping archlinux.org
 ```
 
-> **_Note_**: In the installation image, systemd-networkd, systemd-resolved, iwd and ModemManager are preconfigured and enabled by default. That will **not** be the case for the installed system.
+> **_Note_**: In the installation image, systemd-networkd, systemd-resolved, iwd and ModemManager are preconfigured and enabled by default. That will **not** be the case for the installed system. UPDATE THIS <- DO I NEED TO INSTALL THESE LATER FOR INTERNET TO WORK?
+
+</br>
 
 ## 4. Update the System Clock
 Use timedatectl to ensure the system clock is accurate:
