@@ -51,3 +51,21 @@ Use this to list all the timezones, and then set your corresponding timezeone. F
 timedatectl list-timezones
 timedatectl set-timezone Australia/Melbourne
 ```
+
+## 5. Partition the disks
+Disks are assigned to a block device such as /dev/sda, /dev/nvme0n1 or /dev/mmcblk0. To identify these devices, use lsblk or fdisk.  
+I prefer lsblk here.
+```
+lsblk
+
+or
+
+fdisk -l
+```
+The following partitions are required for a chosen device:
+- One partition for the root directory /.
+- For booting in UEFI mode: an EFI system partition.
+
+Remember in [step 2](#verify-the-boot-mode)
+
+If you want to create any stacked block devices for LVM, system encryption or RAID, do it now (I don't really know what this is at the moment, writing here for future reference).
