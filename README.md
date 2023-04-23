@@ -463,13 +463,10 @@ If you want a fully fledged environment, feel free to add one. Examples include 
 
 #### **3.4 Install Window Manager**
 I'm trying out `i3-gaps` as my Window Manager, and thus don't need to have a full desktop environment. Note that `i3-gaps` is actually in i3 now; I just accept all but feel free to use any other wm or settings. If you installed a desktop environment in the step before, this might not even be necessary since a lot come with wms.
-```
-sudo pacman -S i3
-```
 
-You'll also need a terminal for i3, let's use xterm
+You'll also need a terminal for i3, let's use xterm, and a launcher such as dmenu
 ```
-sudo pacman -S xterm
+sudo pacman -S i3 xterm dmenu
 ```
 
 #### **3.4 Install Window Manager**
