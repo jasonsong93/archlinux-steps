@@ -470,7 +470,7 @@ sudo pacman -S i3
 #### **3.4 Install Window Manager**
 A display manager, or login manager, is typically a graphical user interface that is displayed at the end of the boot process in place of the default shell. Think of it as a simple login screen (like on Windows/MacOS). A full list can be found [here](https://wiki.archlinux.org/title/Display_manager).
 
-I'll be using [LightDM](https://wiki.archlinux.org/title/LightDM). I'll also be using a greeter called `lightdm-webkit-theme-litarvan`.
+I'll be using [LightDM](https://wiki.archlinux.org/title/LightDM). I'll also be using a greeter called `lightdm-slick-greeter`.
 Install both with:
 ```
 sudo pacman -S lightdm lightdm-webkit-theme-litarvan
@@ -516,6 +516,12 @@ pacman -R pulseaudio-alsa
 
 After this, reboot your system.
 
+### **Initramfs**
+Run this to fix if you are stuck [here](https://bbs.archlinux.org/viewtopic.php?id=276188).
+```
+mkinitcpio -P
+```
+
 
 ### **5. Optimisations**
 Most of this section is up to you; if you're running an NVMe drive or flash drive like me, I would highly encourage at least [doing this](https://wiki.archlinux.org/title/Solid_state_drive). Just run the following command to enable the timer:
@@ -534,5 +540,14 @@ Also a lot of improvements [here](https://wiki.archlinux.org/title/Improving_per
 
 ### **6. Appearance**
 Fonts and themes are a rabbit hole. For now, I'll just talk about fonts since I don't know enough about themes.
+**REQUIRES MORE INFO HERE**
 
 
+### **7. Shell**
+Let's use [`zsh`](https://wiki.archlinux.org/title/Zsh).
+
+Install with the following command, then run the `zsh` command:
+```
+sudo pacman -S zsh
+zsh
+```
