@@ -2,6 +2,8 @@
 Personal notes on how to actually set this up, following the official ArchWiki.  
 This assumes that you have already acquired an ISO installation image which can be found below.
 
+Also, feel free to just use `archinstall` - however, I think this is still a great learning excercise.
+
 Download links:  
 [Arch Linux Downloads](https://archlinux.org/download/)  
 [Rufus to burn ISO](https://rufus.ie/en/)
