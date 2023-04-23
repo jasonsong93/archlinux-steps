@@ -6,6 +6,15 @@ Download links:
 [Arch Linux Downloads](https://archlinux.org/download/)  
 [Rufus to burn ISO](https://rufus.ie/en/)
 
+## 0. My setup
+Just wanted to note what setup I had, since it may change some installation steps for you:
+- CPU: AMD Ryzen 7 2700x  
+- GPU: NVIDIA RTX 3090
+- Mouse: Logitech G502 Hero
+- Keyboard: Keychron Q3
+- Motherboard: Aorus x470
+
+
 ## 1. Set the console keyboard layout
 Use this to check a list of keyboard layouts  
 ```
@@ -350,3 +359,4 @@ sudo pacman -S xf86-video-amdgpu
 ```
 sudo pacman -S nvidia nvidia-utils
 ```
+Note: Remove kms from the HOOKS array in /etc/mkinitcpio.conf and regenerate the initramfs. This will prevent the initramfs from containing the nouveau module making sure the kernel cannot load it during early boot.
