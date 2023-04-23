@@ -334,35 +334,22 @@ Find the comment that says
 
 Reboot the machine, and log back in.
 
-## 13. Install Graphics Drivers
-The commands will differ depending on what card you have.
+## 13. But wait, there's even more
+Technically you have a working version of Arch now, if you just want a CLI tool.  
+However, if you're like me, you want to make it look a little bit better than just the console. Otherwise congratulations!!!! You're done 🎉🎉🎉
 
->Intel:
-```
-sudo pacman -S xf86-video-intel
-```
+Please note that if you want to venture through the rest yourself, a lot of these will come from [here](https://wiki.archlinux.org/title/General_recommendations) and other various resources.
 
->AMD:
-```
-sudo pacman -S xf86-video-amdgpu
-```
+</br>
 
->Nvidia:
-```
-sudo pacman -S nvidia nvidia-utils
-```
+---
 
-## 14. But wait, there's even more
-Technically you have a working version of Arch with graphics drivers now.  
-However, if you're like me, you want to make it look a little bit better than just the console. Otherwise feel free to skip the rest!
-
-
-Please note that if you want to venture through the rest yourself, a lot of these will come from [here](https://wiki.archlinux.org/title/General_recommendations).
+</br>
 
 ### **1. System Administration**
 #### **1.1 Users and Groups**
 We've already created our "main" user, but feel free to add more if needed.
-#### **1.2Security**
+#### **1.2 Security**
 Update the microcode
 ```
 pacman -S amd-ucode
@@ -436,4 +423,116 @@ This will update the `/etc/pacman.d/mirrorlist` on boot.
 #### **3.1 Display Server**
 TL;DR if you're using Nvidia, you pretty much have to use Xorg.
 [Xorg](https://wiki.archlinux.org/title/Xorg) is the public, open-source implementation of the X Window System (commonly X11, or X). 
+
+
+Think of the Display Server as the foundation - it is very barebones, and you'll need one of Xorg or Wayland.
+
+
 [Wayland](https://wiki.archlinux.org/title/Wayland) is a newer, alternative display server protocol with several compositors to choose from. 
+
+Unfortunately I have no choice since I have an Nvidia GPU - I'm getting Xorg. A lot of tutorials will get you to install a bunch of packages, but you only need xorg IF you are going to use a different DM (display manager - we'll go through that soon).
+
+```
+sudo pacman -S xorg 
+```
+If you want to use the Xorg display manager, it's called `x-init` so feel free to add that as well to the end.  
+Since I will be using LightDM, I won't be installing it. If you're unsure, have a quick read in the Display Manager section below then come back. 
+
+
+#### **3.2 Install Display drivers**
+The commands will differ depending on what card you have.
+
+>Intel:
+```
+sudo pacman -S xf86-video-intel
+```
+
+>AMD:
+```
+sudo pacman -S xf86-video-amdgpu
+```
+
+>Nvidia:
+```
+sudo pacman -S nvidia nvidia-utils
+```
+
+#### **3.3 Desktop Environment**
+If you want a fully fledged environment, feel free to add one. Examples include KDE, Xfce etc. Essentially it builds the whole rest of the graphical user experience. I'll be skipping this step.
+
+
+#### **3.4 Install Window Manager**
+I'm trying out `i3-gaps` as my Window Manager, and thus don't need to have a full desktop environment. Note that `i3-gaps` is actually in i3 now; I just accept all but feel free to use any other wm or settings. If you installed a desktop environment in the step before, this might not even be necessary since a lot come with wms.
+```
+sudo pacman -S i3
+```
+
+#### **3.4 Install Window Manager**
+A display manager, or login manager, is typically a graphical user interface that is displayed at the end of the boot process in place of the default shell. Think of it as a simple login screen (like on Windows/MacOS). A full list can be found [here](https://wiki.archlinux.org/title/Display_manager).
+
+I'll be using [LightDM](https://wiki.archlinux.org/title/LightDM). I'll also be using a greeter called `lightdm-webkit-theme-litarvan`.
+Install both with:
+```
+sudo pacman -S lightdm lightdm-webkit-theme-litarvan
+```
+You can set the default greeter by changing the [Seat:*] section of the LightDM configuration file `/etc/lightdm/lightdm.conf`like so (replace with whatever greeter you chose):
+```
+[Seat:*]
+...
+greeter-session=lightdm-yourgreeter-greeter
+...
+```
+
+Make sure to enable lightdm.service so LightDM will be started at boot.
+
+#### **3.5 User Directories**
+If you installed a fully fledged desktop environment, you might not need to do this step.  
+
+Well-known user directories like Downloads or Music are created by the xdg-user-dirs-update.service user service, that is provided by xdg-user-dirs and enabled by default upon install.
+
+If your desktop environment or window manager does not pull in the package, you can install it and run `xdg-user-dirs-update` manually as per [XDG user directories](https://wiki.archlinux.org/title/XDG_user_directories#Creating_default_directories).
+
+In this instance, I'll run:
+```
+sudo pacman -S xdg-user-dirs
+xdg-user-dirs-update
+```
+
+Now you have a bunch of default directories!
+
+### **4. Multimedia**
+ALSA is a kernel sound system that should work out the box (it just needs to be unmuted). Sound servers such as PipeWire and PulseAudio can offer additional features and support more complex audio configuration.
+
+After a [bit of research](https://forum.manjaro.org/t/what-is-recommeded-pulseaudio-or-pipewire/131764/6), you can't really go wrong but it seems Pipewire is just better so I chose that. I'll update this if anything changes. The commands bellow are collected from [this page](https://wiki.archlinux.org/title/PipeWire).
+
+```
+sudo pacman -S pipewire pipewire-docs pipewire-audio pipewire-alsa pipewire-pulse
+```
+
+We need to remove `pulseaudio-alsa` if it was installed:
+```
+pacman -R pulseaudio-alsa 
+```
+
+After this, reboot your system.
+
+
+### **5. Optimisations**
+Most of this section is up to you; if you're running an NVMe drive or flash drive like me, I would highly encourage at least [doing this](https://wiki.archlinux.org/title/Solid_state_drive). Just run the following command to enable the timer:
+```
+sudo systemctl enable fstrim.timer
+```
+The service executes fstrim(8) on all mounted filesystems on devices that support the discard operation.
+
+--- 
+Benchmarking is the act of measuring performance and comparing the results to another system's results or a widely accepted standard through a unified procedure.
+
+There are a LOT of benchmarking tools [here](https://wiki.archlinux.org/title/Benchmarking). Go crazy.
+
+Also a lot of improvements [here](https://wiki.archlinux.org/title/Improving_performance).
+
+
+### **6. Appearance**
+Fonts and themes are a rabbit hole. For now, I'll just talk about fonts since I don't know enough about themes.
+
+
