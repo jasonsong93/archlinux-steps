@@ -230,7 +230,7 @@ hwclock --systohc
 
 ### **Localization**
 Edit `/etc/locale.gen` and uncomment `en_US.UTF-8 UTF-8` and other needed locales.  
-In my case, I uncommented `en_AU.UTF-8 UTF-8`
+In my case, I uncommented `en_AU.UTF-8 UTF-8` and the us one.
 
 Then generate the locales by running:
 ```
