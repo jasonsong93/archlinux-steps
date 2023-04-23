@@ -467,6 +467,11 @@ I'm trying out `i3-gaps` as my Window Manager, and thus don't need to have a ful
 sudo pacman -S i3
 ```
 
+You'll also need a terminal for i3, let's use xterm
+```
+sudo pacman -S xterm
+```
+
 #### **3.4 Install Window Manager**
 A display manager, or login manager, is typically a graphical user interface that is displayed at the end of the boot process in place of the default shell. Think of it as a simple login screen (like on Windows/MacOS). A full list can be found [here](https://wiki.archlinux.org/title/Display_manager).
 
