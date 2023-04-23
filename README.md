@@ -302,10 +302,6 @@ Allow network manager to start on boot.
 systemctl enable NetworkManager
 ```
 
-Let's create a user while we are here.
-
-
-
 ## 11. Reboot
 Congratulations! You've made it to the end of the install.
 Exit the chroot environment by typing exit or pressing Ctrl+d.
@@ -325,7 +321,7 @@ useradd -mG wheel username
 ```
 Give your user a password
 ```
-passwd
+passwd username
 ```
 Now we need to ensure that group is a super user. Type the following command (feel free to replace nvim with nano or any other editor of your choice).
 ```
@@ -355,3 +351,89 @@ sudo pacman -S xf86-video-amdgpu
 ```
 sudo pacman -S nvidia nvidia-utils
 ```
+
+## 14. But wait, there's even more
+Technically you have a working version of Arch with graphics drivers now.  
+However, if you're like me, you want to make it look a little bit better than just the console. Otherwise feel free to skip the rest!
+
+
+Please note that if you want to venture through the rest yourself, a lot of these will come from [here](https://wiki.archlinux.org/title/General_recommendations).
+
+### **1. System Administration**
+#### **1.1 Users and Groups**
+We've already created our "main" user, but feel free to add more if needed.
+#### **1.2Security**
+Update the microcode
+```
+pacman -S amd-ucode
+```
+Enforce a delay after a failed login attempt.
+Add the following line to `/etc/pam.d/system-login` to add a delay of at least 4 seconds between failed login attempts:
+```
+auth optional pam_faildelay.so delay=4000000
+```
+`4000000` is the time in microseconds to delay.
+
+Prefer using Wayland over Xorg. Xorg's design predates modern security practices and is considered insecure by many. For example, Xorg applications may record keystrokes while inactive.
+
+If you must run Xorg, it is recommended to avoid running it as root. Within Wayland, the XWayland compatibility layer will automatically use rootless Xorg.
+
+Use `sudo` instead of `su`.
+
+
+### **2. Package Management**
+#### **2.1 pacman**
+Overview of commands:  
+Install: `pacman -S package_name`  
+Remove pacakges (dependencies not removed): `pacman -R package_name`  
+Remove packages + dependencies: `pacman -Rs package_name`  
+Update all packages: `pacman -Syu`
+
+You can install `pacman-contrib` with pacman, and use it to see the dependency tree of packages.
+```
+pactree package_name
+```
+
+Pacman stores its downloaded packages in `/var/cache/pacman/pkg/` and does not remove the old or uninstalled versions automatically. Unless you are downgrading or reinstalling uninstalled packages, you should remove these.
+
+The `paccache` script, provided within the `pacman-contrib` package, deletes all cached versions of installed and uninstalled packages, except for the most recent three, by default:
+```
+paccache -r
+```
+There's a lot more other configs but I will go over the major ones.
+
+1. You can enable and start `paccache.timer` to discard unused packages weekly.
+2. Pacman 6.0 introduced the option to download packages in parallel. ParallelDownloads under [options] needs to be set to a positive integer in `/etc/pacman.conf` to use this feature (e.g., 5). Packages will otherwise be downloaded sequentially if this option is unset.
+
+See [here](https://wiki.archlinux.org/title/Pacman/Tips_and_tricks) for more.
+
+#### **2.2 Mirrors**
+It's important to keep the need for speed. Update mirrors regularly, this can be easily done by using `reflector`
+
+To install it:
+```
+pacman -S reflector
+```
+
+I want to automate this mirrorlist updating with the fastest mirrors for Melbourne, Australia that support HTTPs. In that case, I need to overwrite `/etc/xdg/reflector/reflector.conf` with the following settings:
+
+```
+--save /etc/pacman.d/mirrorlis
+--protocol https
+--age 24
+--country Australia
+--latest 5
+--sort rate
+```
+Then enable `reflector.service` to run Reflector on boot, and start the service immediately.
+```
+systemctl enable reflector.service`
+systemctl start reflector.service
+```
+This will update the `/etc/pacman.d/mirrorlist` on boot.
+
+### **3. Graphical User Interfaces**
+#### **3.1 Display Server**
+TL;DR if you're using Nvidia, you pretty much have to use Xorg.
+[Xorg](https://wiki.archlinux.org/title/Xorg) is the public, open-source implementation of the X Window System (commonly X11, or X). 
+[Wayland](https://wiki.archlinux.org/title/Wayland) is a newer, alternative display server protocol with several compositors to choose from. 
