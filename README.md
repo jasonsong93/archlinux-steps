@@ -8,12 +8,10 @@ Download links:
 
 ## 0. My setup
 Just wanted to note what setup I had, since it may change some installation steps for you:
-- CPU: AMD Ryzen 7 2700x  
-- GPU: NVIDIA RTX 3090
-- Mouse: Logitech G502 Hero
-- Keyboard: Keychron Q3
-- Motherboard: Aorus x470
-
+- OS: Arch Linux x86_64
+- Host: X470 AORUS ULTRA GAMING
+- CPU: AMD Ryzen 7 2700X (16) @ 3.7GHz  
+- GPU: NVIDIA GeForce RTX 3090
 
 ## 1. Set the console keyboard layout
 Use this to check a list of keyboard layouts  
@@ -286,9 +284,7 @@ We need to modify 2 files here. One is `loader.conf` located under `/boot/loader
 >
 >default arch-*
 
-We also need to create `/boot/loader/entries/arch.conf`.
-
-If you have an Intel or AMD CPU, enable microcode updates in addition. Since I have an AMD CPU, I did the following:
+Create `/boot/loader/entries/arch.conf`.
 ```
 nvim /boot/loader/entries/arch.conf
 ```
@@ -301,7 +297,7 @@ and added the following block to the file:
 >
 >options root=/dev/`root-partition` rw
 
-We also need to allow network manager to start on boot.
+Allow network manager to start on boot.
 ```
 systemctl enable NetworkManager
 ```
@@ -359,4 +355,3 @@ sudo pacman -S xf86-video-amdgpu
 ```
 sudo pacman -S nvidia nvidia-utils
 ```
-Note: Remove kms from the HOOKS array in /etc/mkinitcpio.conf and regenerate the initramfs. This will prevent the initramfs from containing the nouveau module making sure the kernel cannot load it during early boot.
